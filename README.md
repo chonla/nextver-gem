@@ -41,7 +41,7 @@ Nextver::Repo.new(".").next_version # => "v1.1.0"
 ## Test
 
 ```
-ruby -Ilib test/nextver_test.rb
+rake test
 ```
 
 ## License
