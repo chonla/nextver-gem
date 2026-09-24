@@ -11,13 +11,13 @@ gem "nextver", require: false, group: :development
 
 or `gem install nextver`.
 
-To get `bin/nextver` created on every `bundle install`, set this once in your app and commit `.bundle/config`:
+In a Rails app, create `bin/nextver` once and commit it:
 
 ```
-bundle config set --local bin bin
+bin/rails generate nextver:install
 ```
 
-Or run `bundle binstubs nextver` once and commit `bin/nextver`.
+Outside Rails, `bundle binstubs nextver` does the same.
 
 ## Usage
 
