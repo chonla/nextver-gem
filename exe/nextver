@@ -1,0 +1,39 @@
+#!/usr/bin/env ruby
+require "optparse"
+require "nextver"
+
+opts = {}
+parser = OptionParser.new do |o|
+  o.banner = "Usage of nextver:\n\n  nextver [options...] [dir]\n\nOptions:"
+  o.on("-d", "Debug mode, print considering steps.") { opts[:debug] = true }
+  o.on("-e", "Suppress trailing new line. Print only version out.") { opts[:no_newline] = true }
+  o.on("-n", "Version is not prefixed by v, for example, 1.0.0.") { opts[:no_prefix] = true }
+  o.on("-t", "Show detected latest version.") { opts[:latest] = true }
+  o.on("-v", "Show version of nextver.") { puts Nextver::VERSION; exit }
+  o.separator "\nFor more information, visit https://github.com/chonla/nextver."
+end
+
+begin
+  parser.parse!
+  log = ->(msg) { puts msg if opts[:debug] }
+  repo = Nextver::Repo.new(ARGV[0] || ".", prefixed: !opts[:no_prefix], log: log)
+  current = repo.current_version
+
+  if opts[:latest]
+    puts current
+    exit
+  end
+
+  log.call(current ? "Detected current version: #{current}" : "No version detected.")
+  nxt = repo.next_version(current)
+
+  if nxt == current
+    log.call("#{current} is the most recent version.")
+  else
+    log.call("Estimated next version: #{nxt}")
+    opts[:no_newline] ? print(nxt) : puts(nxt) unless opts[:debug]
+  end
+rescue OptionParser::ParseError, Nextver::Error => e
+  puts "error: #{e.message}"
+  exit 1
+end
