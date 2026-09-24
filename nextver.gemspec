@@ -8,8 +8,8 @@ Gem::Specification.new do |s|
   s.email       = ["chonlasith@gmail.com"]
   s.homepage    = "https://github.com/chonla/nextver-gem"
   s.license     = "MIT"
-  s.files       = Dir["lib/**/*.rb", "exe/*", "README.md", "LICENSE.txt"]
-  s.bindir      = "exe"
+  s.files       = Dir["lib/**/*.rb", "bin/*", "README.md", "LICENSE.txt"]
+  s.bindir      = "bin"
   s.executables = ["nextver"]
   s.required_ruby_version = ">= 2.6"
 end

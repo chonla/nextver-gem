@@ -11,10 +11,18 @@ gem "nextver", require: false, group: :development
 
 or `gem install nextver`.
 
+To get `bin/nextver` created on every `bundle install`, set this once in your app and commit `.bundle/config`:
+
+```
+bundle config set --local bin bin
+```
+
+Or run `bundle binstubs nextver` once and commit `bin/nextver`.
+
 ## Usage
 
 ```
-bundle exec nextver [options...] [dir]
+bin/nextver [options...] [dir]
 
   -d  Debug mode, print considering steps.
   -e  Suppress trailing new line. Print only version out.
