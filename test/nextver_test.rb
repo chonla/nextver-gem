@@ -12,6 +12,9 @@ class NextverTest < Minitest::Test
     assert_equal :major, Nextver.bump("fix: x\n\nBREAKING-CHANGE: gone")
     assert_nil Nextver.bump("chore: stuff")
     assert_nil Nextver.bump("random text")
+    assert_equal :patch, Nextver.bump("chore(x): stuff", force: true)
+    assert_equal :minor, Nextver.bump("feat: x", force: true)
+    assert_nil Nextver.bump("random text", force: true)
   end
 
   def test_parse_and_sort

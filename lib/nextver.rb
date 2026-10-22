@@ -22,19 +22,20 @@ module Nextver
     parts[0, 3] + (parts[3] ? [0, parts[3]] : [1, ""])
   end
 
-  # :major, :minor, :patch or nil for a single commit message.
-  def bump(message)
+  # :major, :minor, :patch or nil for a single commit message. +force+ makes other conventional types :patch.
+  def bump(message, force: false)
     header = HEADER.match(message.strip) or return nil
     return :major if header[1] || message.lines.drop(1).any? { |l| l =~ BREAKING_FOOTER }
-    { "feat" => :minor, "fix" => :patch }[message[/\A\w+/]]
+    { "feat" => :minor, "fix" => :patch }.fetch(message[/\A\w+/], force ? :patch : nil)
   end
 
   class Repo
-    def initialize(dir = ".", prefixed: true, log: nil)
+    def initialize(dir = ".", prefixed: true, force: false, log: nil)
       raise Error, "target path is not git repo path" unless File.directory?(File.join(dir, ".git"))
       @dir = dir
       @prefix = prefixed ? "v" : ""
       @prefixed = prefixed
+      @force = force
       @log = log || ->(_) {}
     end
 
@@ -46,6 +47,7 @@ module Nextver
 
     def next_version(current = current_version)
       @log.call(@prefixed ? "Version is prefixed by v." : "Version is not prefixed by v.")
+      @log.call("Forcing non-feat/fix commits to bump patch.") if @force
       unless current
         @log.call("Current version is missing. Start a new one at v1.0.0.")
         return "#{@prefix}1.0.0"
@@ -56,7 +58,7 @@ module Nextver
       messages = git("log", "--format=%B%x00", "#{current}..HEAD").split("\0").map(&:strip).reject(&:empty?)
       @log.call("#{messages.size} commit(s) since latest tag")
 
-      counts = messages.map { |m| Nextver.bump(m) }.compact.group_by(&:itself).transform_values(&:size)
+      counts = messages.map { |m| Nextver.bump(m, force: @force) }.compact.group_by(&:itself).transform_values(&:size)
       @log.call("============\nCommit stats\n------------")
       @log.call("Major change(s) = #{counts.fetch(:major, 0)}")
       @log.call("Minor change(s) = #{counts.fetch(:minor, 0)}")

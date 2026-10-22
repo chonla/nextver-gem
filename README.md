@@ -26,6 +26,7 @@ bin/nextver [options...] [dir]
 
   -d  Debug mode, print considering steps.
   -e  Suppress trailing new line. Print only version out.
+  -f  Force non-feat/fix commits to bump patch.
   -n  Version is not prefixed by v, for example, 1.0.0.
   -t  Show detected latest version.
   -v  Show version of nextver.
